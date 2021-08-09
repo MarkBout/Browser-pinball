@@ -1,1 +1,1 @@
-# Browser-pinball
+# phaser-game-project-template
