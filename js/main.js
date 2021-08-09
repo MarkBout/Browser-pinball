@@ -3,10 +3,17 @@ var game;
 window.onload = function () {
     var config = {
         type: Phaser.AUTO,
-        width: 600,
-        height: 850,
+        width: 1000,
+        height: 1000,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 300 },
+                debug: true
+            }
+        },
         parent: 'phaser-game',
-        backgroundColor: Phaser.Display.Color.HexStringToColor("#8513a8"),
+        backgroundColor: Phaser.Display.Color.HexStringToColor("#000000"),
         scene: [SceneMain]
     }
     game = new Phaser.Game(config);
