@@ -35,6 +35,10 @@ class SceneMain extends Phaser.Scene {
         });
        //font
         this.load.bitmapFont("pixelFont", "fonts/font.png", "fonts/font.xml");
+        //audio
+        this.load.audio("beamSound",["sounds/beam.ogg", "sounds/beam.mp3"]);
+        this.load.audio("explosionSound", ["sounds/explosion.ogg", "sounds/explosion.mp3"]);
+        this.load.audio("mainMusic", ["sounds/sci-fi_platformer12.ogg", "sounds/sci-fi_platformer12.mp3"])
     }
 
     create() {
@@ -51,6 +55,17 @@ class SceneMain extends Phaser.Scene {
         this.gameWorld();
         this.scoreLabel = this.add.bitmapText(10, game.config.height - 20,'pixelFont', 'SCORE ' + this.score, 32);
         this.healthlabel = this.add.bitmapText(game.config.width - 125, game.config.height - 20,'pixelFont', 'HEALTH ' + this.playerhealth, 32);
+        var mainMusicConfig = {
+            mute: false,
+            loop: false,
+            delay: 0,
+            seek: 0,
+            volume: 1,
+            detune: 0
+        }
+        this.mainMusic.play(mainMusicConfig)
+
+
     }
 
     update() {
@@ -60,7 +75,6 @@ class SceneMain extends Phaser.Scene {
         this.moveShip(this.ship2,2);
         this.moveShip(this.ship3,2);
         this.movePlayerManager();
-       // this.moveShip(this.enemy, 2);
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)){
             if (this.player.active){
                 this.shootLaser();
@@ -80,14 +94,14 @@ class SceneMain extends Phaser.Scene {
     }
 
     addEnemies(){
-        this.ship1 = this.add.sprite(game.config.width / 2 - 90, game.config.height / 2, "ship");
-        this.ship2 = this.add.sprite(game.config.width / 2, game.config.height / 2, "ship2");
-        this.ship3 = this.add.sprite(game.config.width / 2 + 90, game.config.height / 2, "ship3");
+        this.ship1 = this.add.sprite(game.config.width / 2 - 90, game.config.height, "ship");
+        this.ship2 = this.add.sprite(game.config.width / 2, game.config.height, "ship2");
+        this.ship3 = this.add.sprite(game.config.width / 2 + 90, game.config.height, "ship3");
         this.enemies = this.physics.add.group();
         this.enemies.add(this.ship1);
         this.enemies.add(this.ship2);
         this.enemies.add(this.ship3);
-        this.ship1.setScale(2.5);
+        this.ship1.setScale(3.5);
         this.ship2.setScale(2.5);
         this.ship3.setScale(2.5);
 
@@ -137,11 +151,15 @@ class SceneMain extends Phaser.Scene {
 
         this.physics.add.overlap(this.player, this.enemies, this.hurtPlayer, null, this);
         this.physics.add.overlap(this.projectiles, this.enemies, this.hitEnemy, null, this);
-        this.physics.add.overlap(this.ground, this.enemies, this.decraseHealth, null, this);
+
+        this.beamSound = this.sound.add("beamSound");
+        this.explotionSound = this.sound.add("explosionSound");
+        this.mainMusic = this.sound.add("mainMusic");
     }
 
     shootLaser(){
-        const beam = new Beam(this)
+        const beam = new Beam(this);
+        this.beamSound.play();
     }
 
     movePlayerManager(){
@@ -196,7 +214,9 @@ class SceneMain extends Phaser.Scene {
             return;
         }
         var explotion = new Explation(this, player.x, player.y);
-        this.decraseHealth();
+        this.explotionSound.play();
+        this.playerhealth -= 10;
+        this.healthlabel.text = "HEALTH " + this.playerhealth;
         player.disableBody(true);
         this.time.addEvent({
             delay: 1000,
@@ -212,12 +232,12 @@ class SceneMain extends Phaser.Scene {
         projectile.destroy();
         this.resetShipPos(enemy);
         this.score += 10;
-        this.scoreLabel.text = "SCORE " + this.score
+        this.scoreLabel.text = "SCORE " + this.score;
+        this.explotionSound.play()
 
     }
 
     decraseHealth(){
-        this.playerhealth -= 10;
-        this.healthlabel.text = "HEALTH " + this.playerhealth
+
     }
 }

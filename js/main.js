@@ -8,7 +8,7 @@ window.onload = function () {
         physics: {
             default: 'arcade',
             arcade: {
-                debug: true
+                debug: false
             }
         },
         parent: 'phaser-game',
